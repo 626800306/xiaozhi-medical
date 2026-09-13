@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+
+# knife4j配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: org.atguigu # 与你的项目包名保持一致
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  # 生产环境可设为 true 关闭文档；本地开发保持 false 即可访问
+  production: false
+  # 若开启 basic-auth 会要求登录，本地调试先关闭
+  basic-auth:
+    enable: false
+  setting:
+    language: zh_cn

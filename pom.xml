@@ -12,23 +12,17 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>3.2.7</spring-boot.version>
-<!--        <langchain4j.version>1.18.1-beta28</langchain4j.version>-->
-        <langchain4j.version>1.18.1</langchain4j.version>
+        <spring-boot.version>3.4.5</spring-boot.version>
+        <langchain4j.version>1.18.1-beta28</langchain4j.version>
         <knife4j.version>4.4.0</knife4j.version>
     </properties>
 
     <dependencies>
         <!-- langchain4j -->
-        <!--<dependency>
+        <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
             <version>${langchain4j.version}</version>
-        </dependency>-->
-
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-open-ai</artifactId>
         </dependency>
         <!-- web -->
         <dependency>
@@ -64,14 +58,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>dev.langchain4j</groupId>
-                <artifactId>langchain4j-bom</artifactId>
-                <version>${langchain4j.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

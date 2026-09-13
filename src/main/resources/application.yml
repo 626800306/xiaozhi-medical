@@ -6,7 +6,7 @@ langchain4j:
     chat-model:
       base-url: https://api.deepseek.com
       api-key: sk-35e9f42c26054acc986f5f3760e7bcdd
-      model-name: deepseek-v4.1-flash
+      model-name: deepseek-flash
       log-requests: true
       log-responses: true
 # 启用日志级别

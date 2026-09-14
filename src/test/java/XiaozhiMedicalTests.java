@@ -1,11 +1,22 @@
+import dev.langchain4j.community.model.dashscope.QwenChatModel;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
+import dev.langchain4j.model.chat.request.ChatRequest;
+import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
+import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import lombok.extern.slf4j.Slf4j;
 import org.atguigu.XiaozhiMedicalApplication;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.Duration;
 
 @Slf4j
 @SpringBootTest(classes = XiaozhiMedicalApplication.class)
@@ -13,7 +24,7 @@ public class XiaozhiMedicalTests {
 
 
     @Test
-    public void test() {
+    public void testOpenAI() {
         OpenAiChatModel model = OpenAiChatModel.builder().baseUrl("https://api.deepseek.com").apiKey("sk-35e9f42c26054acc986f5f3760e7bcdd").modelName("deepseek-flash").build();
         String s = model.chat("你好");
         log.info("result: {}", s);
@@ -21,7 +32,7 @@ public class XiaozhiMedicalTests {
 
 
     @Test
-    public void test1() throws InterruptedException {
+    public void testOpenAIStreaming() throws InterruptedException {
 
         OpenAiStreamingChatModel streamingChatModel = OpenAiStreamingChatModel.builder()
                 .baseUrl("https://api.deepseek.com")
@@ -58,4 +69,68 @@ public class XiaozhiMedicalTests {
         // 等待流式结束（最多等 60 秒）
         latch.await(60, java.util.concurrent.TimeUnit.SECONDS);
     }
+
+
+
+    @Test
+    public void testOllama() {
+        OllamaChatModel ollamaChatModel = OllamaChatModel.builder()
+                .baseUrl("http://localhost:11434")
+                .modelName("deepseek-r1:1.5b")
+                .maxRetries(3)
+                .logRequests(true)
+                .logResponses(true)
+                .temperature(0.3)
+                .think(true)
+                .returnThinking(true)
+                .timeout(Duration.ofSeconds(120))
+                .build();
+        ChatResponse re = ollamaChatModel.chat(UserMessage.from("中国目前AI发展现状"));
+        System.out.println(re.aiMessage().text());
+    }
+
+    @Test
+    public void testOllamaStreaming() throws InterruptedException {
+        StreamingChatModel ollamaStreaming = OllamaStreamingChatModel.builder()
+                .baseUrl("http://localhost:11434")
+                .modelName("deepseek-r1:1.5b")
+                .timeout(Duration.ofSeconds(120))
+                .think(true)
+                .temperature(0.3)
+                .returnThinking(true)
+                .logRequests(true)
+                .logResponses(true)
+                .build();
+        // 用 CountDownLatch 阻塞主线程，等流式真正结束再让测试返回
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        ollamaStreaming.chat("目前中国AI发展现状", new StreamingChatResponseHandler() {
+            @Override
+            public void onPartialResponse(String partialResponse) {
+                System.out.print(partialResponse);
+                System.out.flush();
+            }
+
+            @Override
+            public void onCompleteResponse(ChatResponse chatResponse) {
+                System.out.println();
+                latch.countDown(); // 释放主线程
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.error(throwable.getMessage());
+            }
+        });
+        // 等待流式结束（最多等 120 秒）
+        latch.await(120, java.util.concurrent.TimeUnit.SECONDS);
+    }
+
+//    @Autowired
+//    private QwenChatModel chatModel;
+//
+//    @Test
+//    public void testQwen() {
+//        String s = chatModel.chat("你好");
+//        System.out.println(s);
+//    }
 }

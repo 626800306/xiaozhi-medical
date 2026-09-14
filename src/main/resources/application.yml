@@ -17,12 +17,12 @@ langchain4j:
       model-name: deepseek-r1:1.5b
       timeout: 60
   # dashscope
-  community:
-    dashscope:
-      chat-model:
-        base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-        api-key: sk-d76bf72023934153af92e3bb92a71f09
-        model-name: deepseek-v4.1-flash
+#  community:
+#    dashscope:
+#      chat-model:
+#        base-url: https://llm-avizckv7lcdbivnw.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+#        api-key: sk-d76bf72023934153af92e3bb92a71f09
+#        model-name: qwen-max
 
 # qwen
 # 启用日志级别

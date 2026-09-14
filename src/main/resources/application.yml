@@ -15,7 +15,7 @@ langchain4j:
     chat-model:
       base-url: http://localhost:11434
       model-name: deepseek-r1:1.5b
-      timeout: 60
+      timeout: PT60S
   # dashscope
 #  community:
 #    dashscope:

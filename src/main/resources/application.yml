@@ -2,6 +2,7 @@ server:
   port: 8080
 # langchain4j配置
 langchain4j:
+  # open-ai
   open-ai:
     chat-model:
       base-url: https://api.deepseek.com
@@ -9,6 +10,21 @@ langchain4j:
       model-name: deepseek-flash
       log-requests: true
       log-responses: true
+  # ollama
+  ollama:
+    chat-model:
+      base-url: http://localhost:11434
+      model-name: deepseek-r1:1.5b
+      timeout: 60
+  # dashscope
+  community:
+    dashscope:
+      chat-model:
+        base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+        api-key: sk-d76bf72023934153af92e3bb92a71f09
+        model-name: deepseek-v4.1-flash
+
+# qwen
 # 启用日志级别
 logging:
   level:

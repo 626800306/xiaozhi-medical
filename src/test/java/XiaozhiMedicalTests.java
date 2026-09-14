@@ -1,9 +1,7 @@
-import dev.langchain4j.community.model.dashscope.QwenChatModel;
+import com.atguigu.Assistant;
+import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
-import dev.langchain4j.model.chat.request.ChatRequest;
-import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -11,7 +9,7 @@ import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import lombok.extern.slf4j.Slf4j;
-import org.atguigu.XiaozhiMedicalApplication;
+import com.atguigu.XiaozhiMedicalApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -125,12 +123,12 @@ public class XiaozhiMedicalTests {
         latch.await(120, java.util.concurrent.TimeUnit.SECONDS);
     }
 
-//    @Autowired
-//    private QwenChatModel chatModel;
-//
-//    @Test
-//    public void testQwen() {
-//        String s = chatModel.chat("你好");
-//        System.out.println(s);
-//    }
+    @Autowired
+    private Assistant assistant;
+
+    @Test
+    public void testAiService() {
+        dev.langchain4j.data.message.AiMessage s = assistant.chat("你好");
+        System.out.println(s.text());
+    }
 }

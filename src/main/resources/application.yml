@@ -24,7 +24,6 @@ langchain4j:
 #        api-key: sk-d76bf72023934153af92e3bb92a71f09
 #        model-name: qwen-max
 
-# qwen
 # 启用日志级别
 logging:
   level:
@@ -40,7 +39,7 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: org.atguigu # 与你的项目包名保持一致
+      packages-to-scan: com.atguigu # 与你的项目包名保持一致
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true

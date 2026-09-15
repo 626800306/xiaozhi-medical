@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 @Slf4j
 @SpringBootTest(classes = XiaozhiMedicalApplication.class)
@@ -130,5 +131,20 @@ public class XiaozhiMedicalTests {
     public void testAiService() {
         dev.langchain4j.data.message.AiMessage s = assistant.chat("你好");
         System.out.println(s.text());
+    }
+
+    @Autowired
+    private OllamaChatModel ollamaChatModel;
+
+    @Test
+    public void testChatMemory() {
+        UserMessage u1 = UserMessage.from("我是大宝");
+        ChatResponse res = ollamaChatModel.chat(u1);
+        AiMessage a1 = res.aiMessage();
+        log.info(a1.text());
+        ChatResponse cr = ollamaChatModel.chat(Arrays.asList(u1, a1, UserMessage.from("我是谁")));
+        AiMessage cr1 = cr.aiMessage();
+        log.info(cr1.text());
+
     }
 }

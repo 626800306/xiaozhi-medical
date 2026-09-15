@@ -14,11 +14,11 @@ langchain4j:
   ollama:
     chat-model:
       base-url: http://localhost:11434
-      model-name: deepseek-r1:1.5b
-      timeout: PT60S
+      model-name: qwen2.5:7b
+      timeout: PT120S
   # dashscope
 #  community:
-#    dashscope:
+#    dashscope:0
 #      chat-model:
 #        base-url: https://llm-avizckv7lcdbivnw.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
 #        api-key: sk-d76bf72023934153af92e3bb92a71f09

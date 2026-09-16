@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AssistantChatMemoryConfig {
+public class ChatMemoryConfig {
 
     @Bean
-    public ChatMemory assistantChatMemory() {
+    public ChatMemory chatMemory() {
         return MessageWindowChatMemory.builder().maxMessages(10).build();
     }
 }

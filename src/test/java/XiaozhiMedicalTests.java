@@ -159,17 +159,28 @@ public class XiaozhiMedicalTests {
                 .chatModel(ollamaChatModel)
                 .build();
         AiMessage a1 = ass.chat("我是哈喽");
-        log.info("a1: {}", a1.text());
+        log.info(a1.text());
         AiMessage a2 = ass.chat("我是谁？");
-        log.info("a2: {}", a2.text());
+        log.info(a2.text());
     }
 
     @Test
     public void testChatMemory3() {
 
         AiMessage a1 = assistant.chat("我是小庞同学");
-        log.info("a1: {}", a1.text());
+        log.info(a1.text());
         AiMessage a2 = assistant.chat("我是谁？");
-        log.info("a2: {}", a2.text());
+        log.info(a2.text());
+    }
+
+    @Test
+    public void testChatMemory4() {
+
+        AiMessage a1 = assistant.chat("1","我是哈喽同学");
+        log.info(a1.text());
+        AiMessage a2 = assistant.chat("1", "我是谁？");
+        log.info(a2.text());
+        AiMessage a3 = assistant.chat("2","我是谁？");
+        log.info(a3.text());
     }
 }

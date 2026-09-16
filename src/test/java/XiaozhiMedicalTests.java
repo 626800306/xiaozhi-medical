@@ -1,6 +1,7 @@
 import com.atguigu.Assistant;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
@@ -8,6 +9,7 @@ import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.service.AiServices;
 import lombok.extern.slf4j.Slf4j;
 import com.atguigu.XiaozhiMedicalApplication;
 import org.junit.jupiter.api.Test;
@@ -145,6 +147,29 @@ public class XiaozhiMedicalTests {
         ChatResponse cr = ollamaChatModel.chat(Arrays.asList(u1, a1, UserMessage.from("我是谁")));
         AiMessage cr1 = cr.aiMessage();
         log.info(cr1.text());
+    }
 
+
+    @Test
+    public void testChatMemory2() {
+        MessageWindowChatMemory messageWindowChatMemory = MessageWindowChatMemory.builder()
+                .maxMessages(10).build();
+        Assistant ass = AiServices.builder(Assistant.class)
+                .chatMemory(messageWindowChatMemory)
+                .chatModel(ollamaChatModel)
+                .build();
+        AiMessage a1 = ass.chat("我是哈喽");
+        log.info("a1: {}", a1.text());
+        AiMessage a2 = ass.chat("我是谁？");
+        log.info("a2: {}", a2.text());
+    }
+
+    @Test
+    public void testChatMemory3() {
+
+        AiMessage a1 = assistant.chat("我是小庞同学");
+        log.info("a1: {}", a1.text());
+        AiMessage a2 = assistant.chat("我是谁？");
+        log.info("a2: {}", a2.text());
     }
 }

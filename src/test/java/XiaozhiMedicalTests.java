@@ -240,4 +240,15 @@ public class XiaozhiMedicalTests {
         DeleteResult result = mongoTemplate.remove(query, ChatMessages.class);
         System.out.println(result);
     }
+
+    @Test
+    public void testChat() {
+        /*AiMessage chat = assistant.chat("3", "你好");
+        System.out.println(chat);*/
+        /*AiMessage cha = assistant.chat("3", "我刚才问了什么");
+        System.out.println(cha);*/
+
+        AiMessage chat = assistant.chat("你好");
+        System.out.println(chat);
+    }
 }

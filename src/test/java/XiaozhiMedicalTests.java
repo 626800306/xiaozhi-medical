@@ -1,4 +1,7 @@
 import com.atguigu.Assistant;
+import com.atguigu.ChatMessages;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -12,9 +15,14 @@ import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import lombok.extern.slf4j.Slf4j;
 import com.atguigu.XiaozhiMedicalApplication;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -182,5 +190,54 @@ public class XiaozhiMedicalTests {
         log.info(a2.text());
         AiMessage a3 = assistant.chat("2","我是谁？");
         log.info(a3.text());
+    }
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Test
+    public void testMongoDBInsert() {
+        mongoTemplate.insert(new ChatMessages( "测试"));
+    }
+
+    @Test
+    public void testMongoIns() {
+        ChatMessages chat = new ChatMessages("历史列表2");
+        mongoTemplate.insert(chat);
+    }
+
+    @Test
+    public void testFindById() {
+        ChatMessages chat = mongoTemplate.findById("6ab481d8c819a020a8f2381d", ChatMessages.class);
+        System.out.println(chat);
+    }
+
+    @Test
+    public void testUpdate() {
+        Criteria criteria = Criteria.where("_id").is("6ab481d8c819a020a8f2381d");
+        Query query = new Query(criteria);
+        Update update = new Update();
+        update.set("content", "哈哈哈");
+
+        mongoTemplate.upsert(query, update, ChatMessages.class);
+    }
+
+    @Test
+    public void testUpsert() {
+        Criteria criteria = Criteria.where("_id").is("6ab481d8c819a020a8f2381d");
+        Query query = new Query(criteria);
+        Update update = new Update();
+        update.set("content", "aoaoaoao");
+
+        UpdateResult upsert = mongoTemplate.upsert(query, update, ChatMessages.class);
+        System.out.println(upsert);
+    }
+
+    @Test
+    public void testDelete() {
+        Criteria criteria = Criteria.where("_id").is("6ab481f9b1f39f29e97cad8d");
+        Query query = new Query(criteria);
+        DeleteResult result = mongoTemplate.remove(query, ChatMessages.class);
+        System.out.println(result);
     }
 }

@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @Author pk
+ * @Date 2026-10-01 19:17
+ * @Description memory配置
+ */
 @Component
 public class ChatMemoryStoreConfig implements dev.langchain4j.store.memory.chat.ChatMemoryStore {
 

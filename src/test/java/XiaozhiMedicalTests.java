@@ -1,5 +1,6 @@
 import com.atguigu.Assistant;
 import com.atguigu.ChatMessages;
+import com.atguigu.service.XiaozhiService;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import dev.langchain4j.data.message.AiMessage;
@@ -250,5 +251,14 @@ public class XiaozhiMedicalTests {
 
         AiMessage chat = assistant.chat("你好");
         System.out.println(chat);
+    }
+
+    @Autowired
+    private XiaozhiService xiaozhiService;
+
+    @Test
+    public void testTool() {
+        String res = xiaozhiService.chat("12345", "1+2是多少");
+        System.out.println(res);
     }
 }

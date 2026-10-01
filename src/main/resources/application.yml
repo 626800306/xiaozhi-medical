@@ -16,7 +16,9 @@ langchain4j:
     chat-model:
       base-url: http://localhost:11434
       model-name: qwen2.5:7b
-      timeout: PT120S
+      timeout: PT300S
+      log-requests: true
+      log-responses: true
   # dashscope
 #  community:
 #    dashscope:0

@@ -2,7 +2,7 @@ import com.atguigu.Assistant;
 import com.atguigu.ChatMessages;
 import com.atguigu.domain.Appointment;
 import com.atguigu.service.AppointmentService;
-import com.atguigu.service.XiaozhiService;
+import com.atguigu.agent.XiaozhiAgent;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import dev.langchain4j.data.message.AiMessage;
@@ -18,7 +18,6 @@ import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import lombok.extern.slf4j.Slf4j;
 import com.atguigu.XiaozhiMedicalApplication;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -256,11 +255,11 @@ public class XiaozhiMedicalTests {
     }
 
     @Autowired
-    private XiaozhiService xiaozhiService;
+    private XiaozhiAgent XiaozhiAgent;
 
     @Test
     public void testTool() {
-        String res = xiaozhiService.chat("12345", "1+2是多少");
+        String res = XiaozhiAgent.chat("12345", "1+2是多少");
         System.out.println(res);
     }
 

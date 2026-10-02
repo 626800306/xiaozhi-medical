@@ -1,7 +1,7 @@
 package com.atguigu.controller;
 
 import com.atguigu.domain.ChatMessages;
-import com.atguigu.service.XiaozhiService;
+import com.atguigu.agent.XiaozhiAgent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("xiaozhi")
 public class XiaozhiController {
 
-    private final XiaozhiService xiaozhiService;
+    private final XiaozhiAgent XiaozhiAgent;
 
-    public XiaozhiController(XiaozhiService xiaozhiService) {
-        this.xiaozhiService = xiaozhiService;
+    public XiaozhiController(XiaozhiAgent XiaozhiAgent) {
+        this.XiaozhiAgent = XiaozhiAgent;
     }
 
     @Operation(summary = "对话", description = "对话")
     @PostMapping("/chat")
     public String chat(@RequestBody ChatMessages chatMessages) {
-        return xiaozhiService.chat(chatMessages.getMemoryId(), chatMessages.getContent());
+        return XiaozhiAgent.chat(chatMessages.getMemoryId(), chatMessages.getContent());
     }
 }

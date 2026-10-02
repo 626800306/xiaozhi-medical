@@ -1,4 +1,4 @@
-package com.atguigu.service;
+package com.atguigu.agent;
 
 import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
@@ -14,7 +14,7 @@ import dev.langchain4j.service.spring.AiServiceWiringMode;
 @AiService(wiringMode = AiServiceWiringMode.EXPLICIT, chatModel = "ollamaChatModel", // 对话模型
         chatMemoryProvider = "chatMemoryProvider", // 对话模型提供者
         tools = "calculatorTools") // tools配置
-public interface XiaozhiService {
+public interface XiaozhiAgent {
     @SystemMessage(fromResource = "xiaozhi-prompt-template.txt")
     String chat(@MemoryId String memoryId, @UserMessage String userMessage);
 }

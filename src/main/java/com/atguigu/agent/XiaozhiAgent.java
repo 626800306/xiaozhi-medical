@@ -13,8 +13,9 @@ import dev.langchain4j.service.spring.AiServiceWiringMode;
  */
 @AiService(wiringMode = AiServiceWiringMode.EXPLICIT, chatModel = "ollamaChatModel", // 对话模型
         chatMemoryProvider = "chatMemoryProvider", // 对话模型提供者
-        tools = "calculatorTools") // tools配置
+        tools = "appointmentTools") // tools配置
 public interface XiaozhiAgent {
     @SystemMessage(fromResource = "xiaozhi-prompt-template.txt")
     String chat(@MemoryId String memoryId, @UserMessage String userMessage);
+
 }

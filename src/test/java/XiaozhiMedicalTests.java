@@ -1,3 +1,4 @@
+import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
 import com.atguigu.Assistant;
 import com.atguigu.ChatMessages;
 import com.atguigu.domain.Appointment;
@@ -5,29 +6,47 @@ import com.atguigu.service.AppointmentService;
 import com.atguigu.agent.XiaozhiAgent;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
+import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
+import dev.langchain4j.data.document.loader.UrlDocumentLoader;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
+import dev.langchain4j.data.document.parser.apache.pdfbox.ApachePdfBoxDocumentParser;
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
+import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
+import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
+import dev.langchain4j.store.embedding.EmbeddingSearchResult;
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import com.atguigu.XiaozhiMedicalApplication;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @SpringBootTest(classes = XiaozhiMedicalApplication.class)
@@ -292,4 +311,54 @@ public class XiaozhiMedicalTests {
     void testRemoveById() {
         appointmentService.removeById(1L);
     }
+
+    @Test
+    public void testDocumentLoad() {
+        Document document = ClassPathDocumentLoader.loadDocument("./new.pdf", new ApachePdfBoxDocumentParser());
+        System.out.println(document);
+
+        /*List<Document> docs = ClassPathDocumentLoader.loadDocuments("ab", new TextDocumentParser());
+        docs.stream().forEach(System.out::println);*/
+
+        /*List<Document> docs = ClassPathDocumentLoader.loadDocumentsRecursively("ab", new TextDocumentParser());
+        docs.stream().forEach(System.out::println);*/
+
+
+        /*Document document = FileSystemDocumentLoader.loadDocument("E:\\xiaozhi-medical\\src\\main\\resources\\xiaozhi-prompt-template.txt");
+        System.out.println(document);*/
+    }
+
+    @Test
+    public void testEmbedding() {
+        InMemoryEmbeddingStore<TextSegment> inMemoryEmbeddingStore = new InMemoryEmbeddingStore<>();
+        AllMiniLmL6V2EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+
+        TextSegment s1 = TextSegment.from("I like bootball.");
+        Embedding e1 = embeddingModel.embed(s1).content();
+        inMemoryEmbeddingStore.add(e1, s1);
+
+        TextSegment s2 = TextSegment.from("The weather is good day.");
+        Embedding e2 = embeddingModel.embed(s2).content();
+        inMemoryEmbeddingStore.add(e2, s2);
+
+        Embedding searchEmbedding = embeddingModel.embed("what is your favourite sport?").content();
+        EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder().queryEmbedding(searchEmbedding).maxResults(1).build();
+
+
+        List<EmbeddingMatch<TextSegment>> matches = inMemoryEmbeddingStore.search(embeddingSearchRequest).matches();
+        EmbeddingMatch<TextSegment> embeddingMatch = matches.get(0);
+        System.out.println("score: " + embeddingMatch.score() + ", text: " + embeddingMatch.embedded().text());
+
+        String jsonStr = inMemoryEmbeddingStore.serializeToJson();
+        System.out.println("jsonStr: " + jsonStr);
+        InMemoryEmbeddingStore<TextSegment> textSegment = inMemoryEmbeddingStore.fromJson(jsonStr);
+        System.out.println("textSegment: " + textSegment);
+
+        System.out.println("=========================");
+
+        inMemoryEmbeddingStore.serializeToFile("memoryEmbedding.store");
+        InMemoryEmbeddingStore<TextSegment> t = inMemoryEmbeddingStore.fromFile("memoryEmbedding.store");
+
+    }
+
 }

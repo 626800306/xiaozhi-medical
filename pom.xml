@@ -19,6 +19,7 @@
         <mybatis-plus.version>3.5.11</mybatis-plus.version>
         <pdfbox.version>1.18.0-beta28</pdfbox.version>
         <embedding-all-minilm-l6-v2.version>1.18.0-beta28</embedding-all-minilm-l6-v2.version>
+        <pinecone.version>1.18.0-beta28</pinecone.version>
     </properties>
 
     <dependencies>
@@ -95,11 +96,16 @@
             <version>${pdfbox.version}</version>
         </dependency>
         <!-- 内存向量存储相关 -->
-        <!-- Source: https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-embeddings-all-minilm-l6-v2 -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
             <version>${embedding-all-minilm-l6-v2.version}</version>
+        </dependency>
+        <!-- pinecone向量存储 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-pinecone</artifactId>
+            <version>${pinecone.version}</version>
         </dependency>
 
     </dependencies>

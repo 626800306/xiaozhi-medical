@@ -32,7 +32,9 @@ import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
 import dev.langchain4j.store.embedding.EmbeddingSearchResult;
+import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import com.atguigu.XiaozhiMedicalApplication;
 import org.json.JSONObject;
@@ -376,12 +378,44 @@ public class XiaozhiMedicalTests {
         System.out.println("token长度：" + i2);
     }
 
+    @Autowired
+    private OpenAiEmbeddingModel openAiEmbeddingModel;
+
+    @Autowired
+    private EmbeddingStore pineconeEmbeddingStore;
+
     @Test
     public void testVector() {
-        OpenAiEmbeddingModel model = OpenAiEmbeddingModel.builder().baseUrl("https://api.openai-proxy.org/v1").apiKey("sk-9xwWlnFYP3JiAc1MqGdn1Das8umM0pTAyOEqZY2hs75Xtu6s").modelName("text-embedding-3-small").build();
-        Response<Embedding> embed = model.embed("你好，测试嵌入模型");
+        /*Response<Embedding> embed = openAiEmbeddingModel.embed("你好，测试嵌入模型");
         log.info("vector: {}", embed.content().vector());
         log.info("vector length: {}", embed.content().vector().length);
+
+        String uuid = embeddingStore.add(embed.content());
+        System.out.println(uuid);*/
+
+        pineconeEmbeddingStore.remove("8cf807d7-5023-4cf6-a65a-1cffd1536e81");
+    }
+
+    @Test
+    public void testPineconeStore() {
+        TextSegment t1 = TextSegment.from("我喜欢篮球");
+        Embedding e1 = openAiEmbeddingModel.embed(t1).content();
+        pineconeEmbeddingStore.add(e1, t1);
+
+        TextSegment t2 = TextSegment.from("我一般早上不吃早饭");
+        Embedding e2 = openAiEmbeddingModel.embed(t2).content();
+        pineconeEmbeddingStore.add(e2, t2);
+
+        Embedding searchEmbedding = openAiEmbeddingModel.embed("你喜欢什么运动").content();
+        EmbeddingSearchResult<TextSegment> embeddingSearchResult = pineconeEmbeddingStore.search(EmbeddingSearchRequest.builder()
+                .query("你喜欢什么运动")
+                .queryEmbedding(searchEmbedding)
+//                .minScore(0.8D)
+                .maxResults(1)
+                .build());
+        List<EmbeddingMatch<TextSegment>> matches = embeddingSearchResult.matches();
+        EmbeddingMatch<TextSegment> match = matches.get(0);
+        System.out.println("score: " + match.score() + ", embedded: " + match.embedded() + ", embeddedId: " + match.embeddingId());
     }
 
 }

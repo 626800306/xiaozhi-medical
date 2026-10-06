@@ -17,7 +17,9 @@ public class AppointmentTools {
         this.appointmentService = appointmentService;
     }
 
-    @Tool(name = "预约挂号", value = "根据参数，先执行工具方法queryDepartment查询是否可预约，并直接给用户回答是否可预约，并让用户确认所有预约信息，用户确认后再进行预约")
+    @Tool(name = "预约挂号", value = "根据参数，先执行工具方法queryDepartment查询是否可预约，并直接给\n" +
+            "用户回答是否可预约，并让用户确认所有预约信息，用户确认后再进行预约。如果用户没有提供具体的医生姓名，请从\n" +
+            "向量存储中找到一位医生。")
     public String bookAppointment(Appointment appointment) {
         log.info("预约挂号");
         // 查询数据库中是否包含预约信息
@@ -25,8 +27,10 @@ public class AppointmentTools {
         if (appointmentDB == null) {
             appointment.setId(null);
             if (appointmentService.save(appointment)) {
+                log.info("预约成功，并返回预约详情");
                 return "预约成功，并返回预约详情";
             } else {
+                log.error("预约失败");
                 return "预约失败";
             }
         }

@@ -20,11 +20,14 @@ import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
+import dev.langchain4j.model.embedding.onnx.HuggingFaceTokenCountEstimator;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.output.Response;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
@@ -359,6 +362,26 @@ public class XiaozhiMedicalTests {
         inMemoryEmbeddingStore.serializeToFile("memoryEmbedding.store");
         InMemoryEmbeddingStore<TextSegment> t = inMemoryEmbeddingStore.fromFile("memoryEmbedding.store");
 
+    }
+
+
+    @Test
+    public void testToken() {
+        String text = "这是一个测试文本，为了计算token数量";
+        UserMessage userMessage = UserMessage.from(text);
+        HuggingFaceTokenCountEstimator huggingFaceTokenCountEstimator = new HuggingFaceTokenCountEstimator();
+        int i1 = huggingFaceTokenCountEstimator.estimateTokenCountInText(text);
+        System.out.println("token长度：" + i1);
+        int i2 = huggingFaceTokenCountEstimator.estimateTokenCountInMessage(userMessage);
+        System.out.println("token长度：" + i2);
+    }
+
+    @Test
+    public void testVector() {
+        OpenAiEmbeddingModel model = OpenAiEmbeddingModel.builder().baseUrl("https://api.openai-proxy.org/v1").apiKey("sk-9xwWlnFYP3JiAc1MqGdn1Das8umM0pTAyOEqZY2hs75Xtu6s").modelName("text-embedding-3-small").build();
+        Response<Embedding> embed = model.embed("你好，测试嵌入模型");
+        log.info("vector: {}", embed.content().vector());
+        log.info("vector length: {}", embed.content().vector().length);
     }
 
 }

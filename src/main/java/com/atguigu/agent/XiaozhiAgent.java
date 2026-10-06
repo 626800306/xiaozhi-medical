@@ -11,9 +11,10 @@ import dev.langchain4j.service.spring.AiServiceWiringMode;
  * @Date 2026-10-01 19:25
  * @Description agent接口
  */
-@AiService(wiringMode = AiServiceWiringMode.EXPLICIT, chatModel = "ollamaChatModel", // 对话模型
+@AiService(wiringMode = AiServiceWiringMode.EXPLICIT, chatModel = "openAiChatModel", // 对话模型
         chatMemoryProvider = "chatMemoryProvider", // 对话模型提供者
-        tools = "appointmentTools") // tools配置
+        tools = "appointmentTools", // tools配置
+        contentRetriever = "contentRetriever") // 向量存储
 public interface XiaozhiAgent {
     @SystemMessage(fromResource = "xiaozhi-prompt-template.txt")
     String chat(@MemoryId String memoryId, @UserMessage String userMessage);

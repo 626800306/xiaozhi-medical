@@ -2,13 +2,14 @@ package com.atguigu.config;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
-import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
+import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,12 @@ public class ChatMemoryProviderConfig {
     @Autowired
     private ChatMemoryStoreConfig chatMemoryStoreConfig;
 
+    @Autowired
+    private OpenAiEmbeddingModel openAiEmbeddingModel;
+
+    @Autowired
+    private EmbeddingStore<TextSegment> embeddingStore;
+
     @Bean
     public ChatMemoryProvider chatMemoryProvider() {
         return memoryId -> MessageWindowChatMemory.builder().id(memoryId) // 消息id
@@ -37,8 +44,13 @@ public class ChatMemoryProviderConfig {
                 .build();
     }
 
+    /**
+     * 内存向量存储
+     *
+     * @return
+     */
     @Bean
-    public ContentRetriever contentRetriever() {
+    public ContentRetriever contentRetrieverInMemory() {
 
         // 加载knowledge md文档，使用默认文档解析器解析
         Document hospitalDoc = ClassPathDocumentLoader.loadDocument("knowledge/医院信息.md", new TextDocumentParser());
@@ -51,5 +63,19 @@ public class ChatMemoryProviderConfig {
         EmbeddingStoreIngestor.ingest(documents, embeddingStore);
         // 从嵌入模型（EmbeddingStore）里检索和查询内容相关的信息
         return EmbeddingStoreContentRetriever.from(embeddingStore);
+    }
+
+    /**
+     * pinecone向量存储
+     *
+     * @return
+     */
+    @Bean
+    public ContentRetriever contentRetrieverInPinecone() {
+        return EmbeddingStoreContentRetriever.builder().embeddingStore(embeddingStore) // 向量存储数据库
+                .embeddingModel(openAiEmbeddingModel) // 向量模型
+                .minScore(0.6) // 最低得分
+                .maxResults(3) // 最多返回结果数量
+                .build();
     }
 }

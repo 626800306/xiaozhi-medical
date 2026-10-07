@@ -11,6 +11,13 @@ langchain4j:
       model-name: qwen3.5-flash
       log-requests: true
       log-responses: true
+    # 流式对话模型：与 chat-model 分开配置，才会创建 openAiStreamingChatModel Bean
+    streaming-chat-model:
+      base-url: https://api.openai-proxy.org/v1
+      api-key: sk-9xwWlnFYP3JiAc1MqGdn1Das8umM0pTAyOEqZY2hs75Xtu6s
+      model-name: qwen3.5-flash
+      log-requests: true
+      log-responses: true
   # ollama
   ollama:
     chat-model:

@@ -29,10 +29,7 @@ import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.service.AiServices;
-import dev.langchain4j.store.embedding.EmbeddingMatch;
-import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
-import dev.langchain4j.store.embedding.EmbeddingSearchResult;
-import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.*;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
@@ -382,7 +379,7 @@ public class XiaozhiMedicalTests {
     private OpenAiEmbeddingModel openAiEmbeddingModel;
 
     @Autowired
-    private EmbeddingStore pineconeEmbeddingStore;
+    private EmbeddingStore<TextSegment> pineconeEmbeddingStore;
 
     @Test
     public void testVector() {
@@ -415,7 +412,24 @@ public class XiaozhiMedicalTests {
                 .build());
         List<EmbeddingMatch<TextSegment>> matches = embeddingSearchResult.matches();
         EmbeddingMatch<TextSegment> match = matches.get(0);
-        System.out.println("score: " + match.score() + ", embedded: " + match.embedded() + ", embeddedId: " + match.embeddingId());
+        System.out.println("score: " + match.score() + ", embedded: " + match.embedded().text() + ", embeddedId: " + match.embeddingId());
+    }
+
+    /**
+     * 将本当上传到pinecone向量库中
+     */
+    @Test
+    public void uploadDocsToPinecone() {
+        Document d1 = FileSystemDocumentLoader.loadDocument("E:\\xiaozhi-medical\\src\\main\\resources\\knowledge\\医院信息.md");
+        Document d2 = FileSystemDocumentLoader.loadDocument("E:\\xiaozhi-medical\\src\\main\\resources\\knowledge\\科室信息.md");
+        Document d3 = FileSystemDocumentLoader.loadDocument("E:\\xiaozhi-medical\\src\\main\\resources\\knowledge\\神经内科.md");
+
+        // 文本向量化
+        EmbeddingStoreIngestor.builder()
+                .embeddingStore(pineconeEmbeddingStore)
+                .embeddingModel(openAiEmbeddingModel)
+                .build()
+                .ingest(Arrays.asList(d1, d2, d3));
     }
 
 }

@@ -20,6 +20,7 @@
         <pdfbox.version>1.18.0-beta28</pdfbox.version>
         <embedding-all-minilm-l6-v2.version>1.18.0-beta28</embedding-all-minilm-l6-v2.version>
         <pinecone.version>1.18.0-beta28</pinecone.version>
+        <reactor.version>1.18.0-beta28</reactor.version>
     </properties>
 
     <dependencies>
@@ -107,7 +108,16 @@
             <artifactId>langchain4j-pinecone</artifactId>
             <version>${pinecone.version}</version>
         </dependency>
-
+        <!-- 流式输出 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-reactor</artifactId>
+            <version>${reactor.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

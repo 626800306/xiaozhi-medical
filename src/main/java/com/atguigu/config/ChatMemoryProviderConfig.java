@@ -53,9 +53,9 @@ public class ChatMemoryProviderConfig {
     public ContentRetriever contentRetrieverInMemory() {
 
         // 加载knowledge md文档，使用默认文档解析器解析
-        Document hospitalDoc = ClassPathDocumentLoader.loadDocument("knowledge/医院信息.md", new TextDocumentParser());
-        Document departmentDoc = ClassPathDocumentLoader.loadDocument("knowledge/科室信息.md", new TextDocumentParser());
-        Document neuroDoc = ClassPathDocumentLoader.loadDocument("knowledge/神经内科.md", new TextDocumentParser());
+        Document hospitalDoc = ClassPathDocumentLoader.loadDocument("knowledge/hospital.md", new TextDocumentParser());
+        Document departmentDoc = ClassPathDocumentLoader.loadDocument("knowledge/department.md", new TextDocumentParser());
+        Document neuroDoc = ClassPathDocumentLoader.loadDocument("knowledge/neurology.md", new TextDocumentParser());
         List<Document> documents = Arrays.asList(hospitalDoc, departmentDoc, neuroDoc);
         // 使用内存向量存储
         InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,16 +55,38 @@ public class ChatMemoryProviderConfig {
     public ContentRetriever contentRetrieverInMemory() {
 
         // 加载knowledge md文档，使用默认文档解析器解析
-        Document hospitalDoc = ClassPathDocumentLoader.loadDocument("knowledge/hospital.md", new TextDocumentParser());
-        Document departmentDoc = ClassPathDocumentLoader.loadDocument("knowledge/department.md", new TextDocumentParser());
-        Document neuroDoc = ClassPathDocumentLoader.loadDocument("knowledge/neurology.md", new TextDocumentParser());
+        Document hospitalDoc = loadFromClasspath("knowledge/hospital.md");
+        Document departmentDoc = loadFromClasspath("knowledge/department.md");
+        Document neuroDoc = loadFromClasspath("knowledge/neurology.md");
         List<Document> documents = Arrays.asList(hospitalDoc, departmentDoc, neuroDoc);
         // 使用内存向量存储
         InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
-        // 使用默认的文档分割器
-        EmbeddingStoreIngestor.ingest(documents, embeddingStore);
+
+
+        EmbeddingStoreIngestor embeddingStoreIngestor = EmbeddingStoreIngestor.builder()
+                .embeddingStore(embeddingStore)
+                .embeddingModel(openAiEmbeddingModel)
+                .build();
+        embeddingStoreIngestor.ingest(documents);
         // 从嵌入模型（EmbeddingStore）里检索和查询内容相关的信息
-        return EmbeddingStoreContentRetriever.from(embeddingStore);
+        return EmbeddingStoreContentRetriever.builder()
+                .embeddingModel(openAiEmbeddingModel)
+                .embeddingStore(embeddingStore)
+                .minScore(0.5)
+                .maxResults(3)
+                .build();
+    }
+
+    /** 从 classpath 按流读取并解析，兼容 jar 包内运行 */
+    private Document loadFromClasspath(String path) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (is == null) {
+                throw new IllegalArgumentException("classpath 资源未找到: " + path);
+            }
+            return new TextDocumentParser().parse(is);
+        } catch (IOException e) {
+            throw new RuntimeException("读取知识库文件失败: " + path, e);
+        }
     }
 
     /**
@@ -72,7 +96,8 @@ public class ChatMemoryProviderConfig {
      */
     @Bean
     public ContentRetriever contentRetrieverInPinecone() {
-        return EmbeddingStoreContentRetriever.builder().embeddingStore(embeddingStore) // 向量存储数据库
+        return EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(embeddingStore) // 向量存储数据库
                 .embeddingModel(openAiEmbeddingModel) // 向量模型
                 .minScore(0.6) // 最低得分
                 .maxResults(3) // 最多返回结果数量
